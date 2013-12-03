@@ -25,8 +25,11 @@ int bronze_buffer[11];
 
 #define WORK_SIZE 1024
 char work_area[WORK_SIZE];
-int currentPostion=0;
+int currentGoldenPostion=0;
+int currentSilverPostion=0;
+int currentBronzePostion=0;
 
+int silverRun;
 
 int main() {
   int res;
@@ -40,7 +43,9 @@ int main() {
   int GoldenNextPosition=0;
   int SilverNextPosition=0;
   int BronzeNextPosition=0;
-
+  
+  silverRun=0;
+  
   //information about the fake process
   int fakePID;
   int fakePriority;
@@ -106,6 +111,11 @@ int main() {
          printf("Main Thread golden-%d:%d\n",GoldenNextPosition ,golden_buffer[GoldenNextPosition]);
             golden_buffer[GoldenNextPosition]=fakePID;
             golden_time_buffer[GoldenNextPosition]=fakeTime;
+            if(golden_buffer[5]!=null){
+              golden_buffer[5]=1;
+            }else{
+              golden_buffer[5]++;
+            }
             if(GoldenNextPosition==4){
               GoldenNextPosition=0;
              }else{
@@ -116,6 +126,11 @@ int main() {
          printf("Main Thread silver-%d:%d\n",SilverNextPosition ,silver_buffer[SilverNextPosition]);
             silver_buffer[SilverNextPosition]=fakePID;
             silver_time_buffer[SilverNextPosition]=fakeTime;
+            if(silver_buffer[10]!=null){
+              silver_buffer[10]=1;
+            }else{
+              silver_buffer[10]++;
+            }
             if(SilverNextPosition==9){
               SilverNextPosition=0;
              }else{
@@ -127,6 +142,11 @@ int main() {
          printf("Main Thread bronze-%d:%d\n",BronzeNextPosition ,bronze_buffer[BronzeNextPosition]);
             bronze_buffer[BronzeNextPosition]=fakePID;
             bronze_time_buffer[BronzeNextPosition]=fakeTime;
+            if(bronze_buffer[10]!=null){
+              bronze_buffer[10]=1;
+            }else{
+              bronze_buffer[10]++;
+            }
             if(BronzeNextPosition==9){
               BronzeNextPosition=0;
              }else{
@@ -173,20 +193,59 @@ int main() {
   exit(EXIT_SUCCESS);
 }
 
+
+
+//threads function
 void *thread_function(void *arg) {
   int count=10;
+  int pid=0;
+  int timeNeeds=0;
   while(count > 0) {
     sem_wait(&syn_sem);
     sem_wait(&bin_sem);  
-    printf("S thread-%d:%d\n",currentPostion,golden_buffer[currentPostion]);
-    if(currentPostion==4){
-      currentPostion=0;
-    }else{
-      currentPostion++;
-    }    
-    //get the process
+    if(golden_buffer[5]!=0){
+      pid=golden_buffer[GoldenNextPosition];
+      timeNeeds=golden_time_buffer[GoldenNextPosition];
+            if(GoldenNextPosition==4){
+              GoldenNextPosition=0;
+             }else{
+              GoldenNextPosition++;
+             }
+    }else if (silverRun!=0&&silver_buffer[10]!=0){
+      pid=silver_buffer[SilverNextPosition];
+      timeNeeds=silver_time_buffer[SilverNextPosition];
+      if(SilverNextPosition==9){
+        SilverNextPosition=0;
+      }else{
+        SilverNextPosition++;
+      }
+    }else if(silverRun==0&&bronze_buffer[10]!=0){
+      pid=bronze_buffer[BronzeNextPosition];
+      timeNeeds=bronze_time_buffer[BronzeNextPosition];
+      if(BronzeNextPosition==9){
+        BronzeNextPosition=0;
+      }else{
+        BronzeNextPosition+;
+      }
+    }else if{silver_buffer[10]!=0){
+      pid=silver_buffer[SilverNextPosition];
+      timeNeeds=silver_time_buffer[SilverNextPosition];
+      if(SilverNextPosition==9){
+        SilverNextPosition=0;
+      }else{
+        SilverNextPosition++;
+      }
+    }else if(bronze_buffer[10]!=0){
+      pid=bronze_buffer[BronzeNextPosition];
+      timeNeeds=bronze_time_buffer[BronzeNextPosition];
+      if(BronzeNextPosition==9){
+        BronzeNextPosition=0;
+      }else{
+        BronzeNextPosition+;
+      }
+    }
     sem_post(&bin_sem);
-    sem_post(&ful_sem);
+   // sem_post(&ful_sem);
     count--;
   }
   pthread_exit(NULL);
@@ -197,15 +256,49 @@ void *thread_function2(void *arg) {
   while(count > 0) {
     sem_wait(&syn_sem);
     sem_wait(&bin_sem);  
-    printf("S2 thread-%d:%d\n",currentPostion,golden_buffer[currentPostion]);
-    if(currentPostion==4){
-      currentPostion=0;
-    }else{
-      currentPostion++;
-    }    
-    //get the process
+    if(golden_buffer[5]!=0){
+      pid=golden_buffer[GoldenNextPosition];
+      timeNeeds=golden_time_buffer[GoldenNextPosition];
+            if(GoldenNextPosition==4){
+              GoldenNextPosition=0;
+             }else{
+              GoldenNextPosition++;
+             }
+    }else if (silverRun!=0&&silver_buffer[10]!=0){
+      pid=silver_buffer[SilverNextPosition];
+      timeNeeds=silver_time_buffer[SilverNextPosition];
+      if(SilverNextPosition==9){
+        SilverNextPosition=0;
+      }else{
+        SilverNextPosition++;
+      }
+    }else if(silverRun==0&&bronze_buffer[10]!=0){
+      pid=bronze_buffer[BronzeNextPosition];
+      timeNeeds=bronze_time_buffer[BronzeNextPosition];
+      if(BronzeNextPosition==9){
+        BronzeNextPosition=0;
+      }else{
+        BronzeNextPosition+;
+      }
+    }else if{silver_buffer[10]!=0){
+      pid=silver_buffer[SilverNextPosition];
+      timeNeeds=silver_time_buffer[SilverNextPosition];
+      if(SilverNextPosition==9){
+        SilverNextPosition=0;
+      }else{
+        SilverNextPosition++;
+      }
+    }else if(bronze_buffer[10]!=0){
+      pid=bronze_buffer[BronzeNextPosition];
+      timeNeeds=bronze_time_buffer[BronzeNextPosition];
+      if(BronzeNextPosition==9){
+        BronzeNextPosition=0;
+      }else{
+        BronzeNextPosition+;
+      }
+    }
     sem_post(&bin_sem);
-    sem_post(&ful_sem);
+    //sem_post(&ful_sem);
     count--;
   }
   pthread_exit(NULL);
@@ -217,15 +310,49 @@ void *thread_function3(void *arg) {
   while(count > 0) {
     sem_wait(&syn_sem);
     sem_wait(&bin_sem);  
-    printf("S3 thread-%d:%d\n",currentPostion,golden_buffer[currentPostion]);
-    if(currentPostion==4){
-      currentPostion=0;
-    }else{
-      currentPostion++;
-    }    
-    //get the process
+    if(golden_buffer[5]!=0){
+      pid=golden_buffer[GoldenNextPosition];
+      timeNeeds=golden_time_buffer[GoldenNextPosition];
+            if(GoldenNextPosition==4){
+              GoldenNextPosition=0;
+             }else{
+              GoldenNextPosition++;
+             }
+    }else if (silverRun!=0&&silver_buffer[10]!=0){
+      pid=silver_buffer[SilverNextPosition];
+      timeNeeds=silver_time_buffer[SilverNextPosition];
+      if(SilverNextPosition==9){
+        SilverNextPosition=0;
+      }else{
+        SilverNextPosition++;
+      }
+    }else if(silverRun==0&&bronze_buffer[10]!=0){
+      pid=bronze_buffer[BronzeNextPosition];
+      timeNeeds=bronze_time_buffer[BronzeNextPosition];
+      if(BronzeNextPosition==9){
+        BronzeNextPosition=0;
+      }else{
+        BronzeNextPosition+;
+      }
+    }else if{silver_buffer[10]!=0){
+      pid=silver_buffer[SilverNextPosition];
+      timeNeeds=silver_time_buffer[SilverNextPosition];
+      if(SilverNextPosition==9){
+        SilverNextPosition=0;
+      }else{
+        SilverNextPosition++;
+      }
+    }else if(bronze_buffer[10]!=0){
+      pid=bronze_buffer[BronzeNextPosition];
+      timeNeeds=bronze_time_buffer[BronzeNextPosition];
+      if(BronzeNextPosition==9){
+        BronzeNextPosition=0;
+      }else{
+        BronzeNextPosition+;
+      }
+    }
     sem_post(&bin_sem);
-    sem_post(&ful_sem);
+   // sem_post(&ful_sem);
     count--;
   }
   pthread_exit(NULL);
@@ -233,18 +360,54 @@ void *thread_function3(void *arg) {
 
 void *thread_function4(void *arg) {
   int count=10;
+  int pid =0;
+  int timeNeeds=0;
   while(count > 0) {
     sem_wait(&syn_sem);
     sem_wait(&bin_sem);  
-    printf("S4 thread-%d:%d\n",currentPostion,golden_buffer[currentPostion]);
-    if(currentPostion==4){
-      currentPostion=0;
-    }else{
-      currentPostion++;
-    }    
-    //get the process
+    if(golden_buffer[5]!=0){
+      pid=golden_buffer[GoldenNextPosition];
+      timeNeeds=golden_time_buffer[GoldenNextPosition];
+            if(GoldenNextPosition==4){
+              GoldenNextPosition=0;
+             }else{
+              GoldenNextPosition++;
+             }
+    }else if (silverRun!=0&&silver_buffer[10]!=0){
+      pid=silver_buffer[SilverNextPosition];
+      timeNeeds=silver_time_buffer[SilverNextPosition];
+      if(SilverNextPosition==9){
+        SilverNextPosition=0;
+      }else{
+        SilverNextPosition++;
+      }
+    }else if(silverRun==0&&bronze_buffer[10]!=0){
+      pid=bronze_buffer[BronzeNextPosition];
+      timeNeeds=bronze_time_buffer[BronzeNextPosition];
+      if(BronzeNextPosition==9){
+        BronzeNextPosition=0;
+      }else{
+        BronzeNextPosition+;
+      }
+    }else if{silver_buffer[10]!=0){
+      pid=silver_buffer[SilverNextPosition];
+      timeNeeds=silver_time_buffer[SilverNextPosition];
+      if(SilverNextPosition==9){
+        SilverNextPosition=0;
+      }else{
+        SilverNextPosition++;
+      }
+    }else if(bronze_buffer[10]!=0){
+      pid=bronze_buffer[BronzeNextPosition];
+      timeNeeds=bronze_time_buffer[BronzeNextPosition];
+      if(BronzeNextPosition==9){
+        BronzeNextPosition=0;
+      }else{
+        BronzeNextPosition+;
+      }
+    }
     sem_post(&bin_sem);
-    sem_post(&ful_sem);
+   // sem_post(&ful_sem);
     count--;
   }
   pthread_exit(NULL);
