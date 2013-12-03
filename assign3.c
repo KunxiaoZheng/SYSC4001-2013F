@@ -10,14 +10,18 @@ void *thread_function2(void *arg);
 void *thread_function3(void *arg);
 void *thread_function4(void *arg);
 double val(void);
+int randMaxMin(int, int);
 
 sem_t bin_sem;
 sem_t ful_sem;
 sem_t syn_sem;
 
-int golden_buffer[5];
-int silver_buffer[10];
-int bronze_buffer[10];
+int golden_buffer[6];
+int silver_buffer[11];
+int bronze_buffer[11];
+int golden_time_buffer[6]
+int silver_time_buffer[11];
+int bronze_buffer[11];
 
 #define WORK_SIZE 1024
 char work_area[WORK_SIZE];
@@ -90,25 +94,42 @@ int main() {
 
     //randint for the infomations
     golden_buffer[GoldenNextPosition]=count;
+    fakePID=randMaxMin(1000,9999);
+    fakePriority=val();
+    fakeTime=randMaxMin(0,10);
     sem_wait(&ful_sem);  
     sem_wait(&bin_sem);
-   
-    printf("Main Thread-%d:%d\n",createNextPosition ,golden_buffer[GoldenNextPosition]);
-    if(createNextPosition==4){
-      createNextPosition=0;
-    }else{
-      createNextPosition++;
-    }
     
-    /*
+   
+    
       if(fakePriority<0.2){
+         printf("Main Thread golden-%d:%d\n",GoldenNextPosition ,golden_buffer[GoldenNextPosition]);
+            if(GoldenNextPosition==4){
+              GoldenNextPosition=0;
+             }else{
+              GoldenNextPosition++;
+             }
       //put process into the gold queue
       }else if(fakePriority>=0.2&&fakePriority<0.6){
+         printf("Main Thread silver-%d:%d\n",SilverNextPosition ,silver_buffer[SilverNextPosition]);
+            if(SilverNextPosition==9){
+              SilverNextPosition=0;
+             }else{
+              SilverNextPosition++;
+             }
+        
       //put process into the silver queue
       }else{
+         printf("Main Thread bronze-%d:%d\n",BronzeNextPosition ,bronze_buffer[BronzeNextPosition]);
+            if(BronzeNextPosition==9){
+              BronzeNextPosition=0;
+             }else{
+              BronzeNextPosition++;
+             }
+        
       //put process into the bronze queue
       }
-    */
+    
     sem_post(&bin_sem);
     sem_post(&syn_sem);
     count++;
@@ -226,4 +247,9 @@ void *thread_function4(void *arg) {
 
 double val(){
   return (double)rand() / (double)RAND_MAX;
+}
+
+int randMaxMin(int max, int min){
+  int r = (rand() % (max-min)+min;
+  return r;
 }
