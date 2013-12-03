@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h>	
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,6 +104,8 @@ int main() {
     
       if(fakePriority<0.2){
          printf("Main Thread golden-%d:%d\n",GoldenNextPosition ,golden_buffer[GoldenNextPosition]);
+            golden_buffer[GoldenNextPosition]=fakePID;
+            golden_time_buffer[GoldenNextPosition]=fakeTime;
             if(GoldenNextPosition==4){
               GoldenNextPosition=0;
              }else{
@@ -112,6 +114,8 @@ int main() {
       //put process into the gold queue
       }else if(fakePriority>=0.2&&fakePriority<0.6){
          printf("Main Thread silver-%d:%d\n",SilverNextPosition ,silver_buffer[SilverNextPosition]);
+            silver_buffer[SilverNextPosition]=fakePID;
+            silver_time_buffer[SilverNextPosition]=fakeTime;
             if(SilverNextPosition==9){
               SilverNextPosition=0;
              }else{
@@ -121,6 +125,8 @@ int main() {
       //put process into the silver queue
       }else{
          printf("Main Thread bronze-%d:%d\n",BronzeNextPosition ,bronze_buffer[BronzeNextPosition]);
+            bronze_buffer[BronzeNextPosition]=fakePID;
+            bronze_time_buffer[BronzeNextPosition]=fakeTime;
             if(BronzeNextPosition==9){
               BronzeNextPosition=0;
              }else{
